@@ -35,7 +35,6 @@ Narrowband::Narrowband nb(nbc, cfg);
 void setup() {
     // connection speed to your terminal (e.g. via USB)
     Serial.begin(115200);
-    delay(2000);
     Serial.println("Hit [ENTER] or wait 10s ");
 
     Serial.setTimeout(10000);
@@ -48,7 +47,7 @@ void setup() {
 
       //OLED init
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-    Serial.println("OLED begun");
+    Serial.println("OLED is initalized.");
     display.display();
     delay(1000);
 
@@ -94,14 +93,14 @@ void loop() {
   int bands2[1] = { 1 };
   nb.getCore().setBands(bands2, sizeof(bands2));
 */
-int asd[] = { 0 };
+int cp_arr[] = { 0 };
 
   for ( size_t i = 0; i < num_all_bands; i++ ){
-      asd[0] = all_bands[i];
+      cp_arr[0] = all_bands[i];
 
       nb.getCore().setModuleFunctionality(false);
 
-      if ( nb.getCore().setBands(asd, 1)) {
+      if ( nb.getCore().setBands(cp_arr, 1)) {
         Serial.println("Successfully set band");
       } else {
         Serial.println("Error setting band");
@@ -122,7 +121,7 @@ int asd[] = { 0 };
       delay(1000);
 
       Serial.print("Trying to attach to B");
-      Serial.println(asd[0]);
+      Serial.println(cp_arr[0]);
 
       if (nb.attach(15000)) {
           Serial.println("Attachment Successful!");
@@ -149,9 +148,10 @@ int asd[] = { 0 };
           display.setTextColor(WHITE);
           display.setCursor(0,0);
           display.println("ThingForward.io");
-          display.println("Connecting via UDP...");
-          display.print("Active Band: ");
-          display.println(asd[0]);
+          display.print("IP: ");
+          display.println(ip);
+          display.print("Active Band: B");
+          display.println(cp_arr[0]);
           display.print("Today is: ");
           display.print(bme280.getTemperature());
           display.println(" C");
