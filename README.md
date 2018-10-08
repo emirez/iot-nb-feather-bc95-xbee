@@ -9,10 +9,6 @@ ThingForward NB-IoT Library
 
 $ platformio lib install
 
-BME280 Library
-
-$ pio lib install 5348
-
 Adafruit_SSD1306
 
 $ pio lib install 135
