@@ -1,16 +1,26 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <SPI.h>
 #include <serialcmds.h>
 #include <narrowbandcore.h>
 #include <narrowband.h>
-#include "Seeed_BME280.h"
-// Select serial object for modem communication
-// Please look at the specs of your board and locate
-// the Serial object with a pin mapping compatible to
-// the shield you're using.
+#include <Adafruit_Sensor.h>
+#include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
+#include <Seeed_BME280.h>
 
-BME280 bme280;
+// OLED Ports
+#define BUTTON_A 4
+#define BUTTON_B 3
+#define BUTTON_C 8
+#define LED 13
+
+#define SEALEVELPRESSURE_HPA (1013.25)
+#define LED1 A1
+
+Adafruit_SSD1306 display = Adafruit_SSD1306();
 HardwareSerial& modem_serial = Serial1;
-
+BME280 bme280;
 // Instantiate command adapter as the connection via serial
 Narrowband::ArduinoSerialCommandAdapter ca(modem_serial);
 
@@ -25,6 +35,7 @@ Narrowband::Narrowband nb(nbc, cfg);
 void setup() {
     // connection speed to your terminal (e.g. via USB)
     Serial.begin(115200);
+    delay(2000);
     Serial.println("Hit [ENTER] or wait 10s ");
 
     Serial.setTimeout(10000);
@@ -34,27 +45,24 @@ void setup() {
       } else {
           Serial.println("BME280 is initialized.");
       }
+
+      //OLED init
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+    Serial.println("OLED begun");
+    display.display();
+    delay(1000);
+
+    pinMode(LED1, OUTPUT);
+    pinMode(BUTTON_A, INPUT_PULLUP);
+    pinMode(BUTTON_B, INPUT_PULLUP);
+    pinMode(BUTTON_C, INPUT_PULLUP);
+
     // Begin modem serial communication with correct speed (check shield specs!)
     // TEKMODUL BC68-DEVKIT 9600,echo
     modem_serial.begin(9600);
     delay(3000);
 }
-/*
-void loop() {
-  if (modem_serial.available()) {
-      int c = modem_serial.read();
-      Serial.write(c);
-  }
 
-  if ( Serial.available()) {
-      int c = Serial.read();
-
-      // echo
-      Serial.write(c);
-      modem_serial.write(c);
-  }
-}
-*/
 void loop() {
 
   // Quectel: wait at least 10 seconds
@@ -131,6 +139,27 @@ int asd[] = { 0 };
           /*if ( nb.sendReceiveUDP("192.168.0.1", 9876,req,resp)) {
               Serial.println(resp);
           } */
+
+          // Write to OLED
+          display.clearDisplay();
+          display.display();
+
+          // text display tests
+          display.setTextSize(1);
+          display.setTextColor(WHITE);
+          display.setCursor(0,0);
+          display.println("ThingForward.io");
+          display.println("Connecting via UDP...");
+          display.print("Active Band: ");
+          display.println(asd[0]);
+          display.print("Today is: ");
+          display.print(bme280.getTemperature());
+          display.println(" C");
+
+          display.setCursor(0,0);
+          display.display();
+          // End of Writing to OLED
+
 
           String msg("89754C84BC46918C?Wtemp=");
           // get temperature from bme280 and send it via UDP
