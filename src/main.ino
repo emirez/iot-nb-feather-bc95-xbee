@@ -161,20 +161,20 @@ int cp_arr[] = { 0 };
           // End of Writing to OLED
 
 
-          String msg("89754C84BC46918C?Wtemp=");
+          String msg("YOUR-ENDPOINT?Wtemp=");
           // get temperature from bme280 and send it via UDP
           msg += bme280.getTemperature();
-          nb.sendUDP("40.114.225.189", 9876, msg);
+          nb.sendUDP("YOUR-IP", 9876, msg);
           delay(2000);
-          String msg2("89754C84BC46918C?Whumd=");
+          String msg2("YOUR-ENDPOINT?Wtemp=")
           // get humidity from bme280 and send it via UDP
           msg2 += bme280.getHumidity();
-          nb.sendUDP("40.114.225.189", 9876, msg2);
+          nb.sendUDP("YOUR-IP", 9876, msg2);
           delay(2000);
-          String msg3("89754C84BC46918C?Wpres=");
+          String msg3("YOUR-ENDPOINT?Wpres=");
           // get pressure from bme280 and send it via UDP
           msg3 += bme280.getPressure();
-          nb.sendUDP("40.114.225.189", 9876, msg3);
+          nb.sendUDP("YOUR-IP", 9876, msg3);
           delay(2000);
 
           nb.detach();
